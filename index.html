@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecomalink — Send money across SADC, instantly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#ffffff;
+    --paper:#f5f7f4;
+    --ink:#12161a;
+    --grey:#5b6169;
+    --grey-soft:#8a9089;
+    --line:#e5e7e2;
+    --green:#116339;
+    --green-mid:#1c8a52;
+    --green-bright:#1fae5c;
+    --green-pale:#e3f5ea;
+    --green-pale-2:#eef7f0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--white);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; letter-spacing:-0.01em;}
+  a{color:inherit; text-decoration:none;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  /* ---------- LOGO ---------- */
+  .logo{display:flex; align-items:center; gap:11px; font-family:'Fraunces', serif; font-weight:700; font-size:1.32rem; color:var(--ink);}
+  .logo-mark{
+    width:44px; height:28px; border-radius:5px;
+    box-shadow:0 4px 14px rgba(17,99,57,0.28);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    transition:transform 0.3s ease;
+  }
+  .logo-mark svg{width:100%; height:100%;}
+  .logo:hover .logo-mark{transform:rotate(-4deg) scale(1.05);}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:60;
+    background:rgba(255,255,255,0.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:76px;}
+  .nav-links{display:flex; gap:36px; font-size:0.92rem; color:var(--grey);}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{
+    background:var(--green); color:var(--white); padding:11px 22px;
+    border-radius:100px; font-weight:600; font-size:0.9rem;
+  }
+  .nav-cta:hover{background:var(--green-mid);}
+  .nav-mobile-hide{display:flex;}
+  @media (max-width:800px){ .nav-mobile-hide{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; padding:88px 0 56px; overflow:hidden; background:
+    radial-gradient(900px 420px at 82% -10%, var(--green-pale) 0%, transparent 60%);
+  }
+  .hero-grid{display:grid; grid-template-columns:1.05fr 1fr; gap:56px; align-items:center;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.76rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--green-mid); margin-bottom:22px;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--green-bright); box-shadow:0 0 0 4px var(--green-pale);}
+  .hero h1{
+    font-size:clamp(2.4rem, 5vw, 3.6rem); line-height:1.06; color:var(--ink);
+    max-width:11.5ch;
+  }
+  .hero h1 em{font-style:italic; color:var(--green-mid);}
+  .hero p.lede{
+    margin-top:22px; font-size:1.08rem; line-height:1.6; color:var(--grey); max-width:46ch;
+  }
+  .hero-cta-row{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--green); color:var(--white); padding:15px 28px; border-radius:100px;
+    font-weight:600; font-size:0.95rem; border:none; cursor:pointer;
+    transition:background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn-primary:hover{background:var(--green-mid); transform:translateY(-2px); box-shadow:0 12px 22px rgba(17,99,57,0.25);}
+  .btn-secondary{
+    padding:15px 26px; border-radius:100px; font-weight:600; font-size:0.95rem;
+    border:1px solid var(--line); color:var(--ink);
+    transition:border-color 0.25s ease, transform 0.25s ease;
+  }
+  .btn-secondary:hover{border-color:var(--grey-soft); transform:translateY(-2px);}
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.7,.3,1);}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+  .hero-stats{display:flex; gap:34px; margin-top:44px; flex-wrap:wrap;}
+  .hero-stats div{border-left:2px solid var(--green-bright); padding-left:12px;}
+  .hero-stats .num{font-family:'IBM Plex Mono',monospace; font-size:1.4rem; color:var(--ink);}
+  .hero-stats .lbl{font-size:0.78rem; color:var(--grey); margin-top:2px;}
+
+  /* corridor visual */
+  .corridor-box{position:relative; aspect-ratio:1/1; max-width:480px; margin:0 auto;}
+  .corridor-box svg{width:100%; height:100%;}
+  .corridor-glow{
+    position:absolute; inset:-20%; z-index:-1;
+    background:radial-gradient(circle at 50% 50%, rgba(31,174,92,0.12), transparent 60%);
+  }
+  .node-label{font-family:'IBM Plex Mono', monospace; font-size:9.5px; fill:var(--grey);}
+  .flow-dot{fill:var(--green-bright);}
+
+  /* ---------- SECTION HEADER ---------- */
+  .section{padding:100px 0;}
+  .section-tight{padding:70px 0;}
+  .section-alt{background:var(--paper);}
+  .sec-head{max-width:640px; margin-bottom:56px;}
+  .sec-eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.76rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--green-mid); margin-bottom:14px; display:block;
+  }
+  .sec-head h2{font-size:clamp(1.8rem, 3.2vw, 2.5rem); color:var(--ink); line-height:1.15;}
+  .sec-head p{margin-top:16px; color:var(--grey); font-size:1.02rem; line-height:1.6;}
+
+  /* ---------- PHOTO SHOWCASE (3 panels) ---------- */
+  .showcase{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:900px){ .showcase{grid-template-columns:1fr;} }
+  .show-card{
+    position:relative; border-radius:22px; overflow:hidden; aspect-ratio:3/4;
+    background:var(--ink);
+    box-shadow:0 1px 2px rgba(17,22,26,0.04);
+    transition:transform 0.45s cubic-bezier(.2,.7,.3,1), box-shadow 0.45s ease;
+  }
+  .show-card:hover{transform:translateY(-8px); box-shadow:0 24px 44px rgba(11,26,18,0.22);}
+  .show-card img{
+    width:100%; height:100%; object-fit:cover; display:block; opacity:0.92;
+    transition:transform 0.6s cubic-bezier(.2,.7,.3,1), opacity 0.4s ease;
+  }
+  .show-card:hover img{transform:scale(1.08); opacity:1;}
+  .show-card .scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(17,22,26,0) 35%, rgba(11,26,18,0.86) 100%);
+  }
+  .show-card .caption{position:absolute; left:24px; right:24px; bottom:26px; color:#fff; transition:transform 0.45s ease;}
+  .show-card:hover .caption{transform:translateY(-4px);}
+  .show-card .caption h3{font-size:1.5rem; color:#fff; line-height:1.15;}
+  .show-card .caption p{margin-top:8px; font-size:0.9rem; color:rgba(255,255,255,0.82); line-height:1.5;}
+  .phone-card:hover .phone-frame{transform:translateY(-4px) rotate(-1deg);}
+  .phone-frame{transition:transform 0.5s cubic-bezier(.2,.7,.3,1);}
+
+  /* phone mockup card (middle panel) */
+  .phone-card{
+    background:linear-gradient(160deg, #0f3d26, var(--ink));
+    display:flex; align-items:center; justify-content:center; padding:28px 22px;
+  }
+  .phone-frame{
+    width:100%; max-width:220px; background:#0d1210; border-radius:26px;
+    border:3px solid #22281f; padding:10px; box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  }
+  .phone-screen{
+    background:var(--white); border-radius:18px; overflow:hidden; font-family:'IBM Plex Sans';
+  }
+  .phone-topbar{display:flex; justify-content:space-between; padding:8px 12px 2px; font-size:8px; color:var(--grey);}
+  .phone-header{
+    display:flex; align-items:center; gap:6px; padding:10px 12px 6px;
+  }
+  .phone-header .mini-logo{width:16px; height:16px; border-radius:5px; background:linear-gradient(145deg, var(--green-bright), var(--green));}
+  .phone-header span{font-weight:700; font-size:11px; color:var(--ink);}
+  .phone-greet{padding:0 12px 8px; font-size:8.5px; color:var(--grey);}
+  .phone-balances{margin:0 12px 8px; background:var(--green-pale-2); border-radius:10px; padding:8px 10px;}
+  .phone-balances .row{display:flex; justify-content:space-between; font-size:8px; padding:3px 0; color:var(--ink);}
+  .phone-balances .row span:first-child{color:var(--grey);}
+  .phone-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:0 12px 12px;}
+  .phone-grid .cell{display:flex; flex-direction:column; align-items:center; gap:3px;}
+  .phone-grid .ic{
+    width:26px; height:26px; border-radius:8px; background:var(--green-pale);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .phone-grid .ic svg{width:13px; height:13px;}
+  .phone-grid .lb{font-size:6.2px; color:var(--grey); text-align:center; line-height:1.1;}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); border:1px solid var(--line); border-radius:18px; overflow:hidden;}
+  @media (max-width:820px){ .steps{grid-template-columns:1fr;} }
+  .step{background:var(--white); padding:38px 32px; transition:background 0.3s ease, transform 0.3s ease;}
+  .step:hover{background:var(--green-pale-2); transform:translateY(-2px);}
+  .step .step-num{font-family:'IBM Plex Mono',monospace; color:var(--green-mid); font-size:0.85rem; margin-bottom:20px;}
+  .step h3{font-size:1.28rem; color:var(--ink); margin-bottom:10px; font-weight:600;}
+  .step p{color:var(--grey); font-size:0.95rem; line-height:1.55;}
+
+  /* ---------- CORRIDORS / COUNTRIES ---------- */
+  .country-belt{display:flex; gap:14px; flex-wrap:wrap;}
+  .country-chip{
+    display:flex; align-items:center; gap:10px;
+    background:var(--white); border:1px solid var(--line);
+    padding:14px 20px; border-radius:100px; font-size:0.92rem; color:var(--ink);
+    transition:transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .country-chip:hover{transform:translateY(-3px); border-color:var(--green-bright); box-shadow:0 10px 20px rgba(31,174,92,0.14);}
+  .country-chip .dot{width:8px; height:8px; border-radius:50%; background:var(--green-bright); transition:transform 0.25s ease;}
+  .country-chip:hover .dot{transform:scale(1.3);}
+
+  /* ---------- USE CASES ---------- */
+  .cases{display:grid; grid-template-columns:repeat(2,1fr); gap:24px;}
+  @media (max-width:820px){ .cases{grid-template-columns:1fr;} }
+  .case-card{
+    background:var(--white); border:1px solid var(--line); border-radius:20px;
+    padding:34px; position:relative;
+    transition:transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .case-card:hover{transform:translateY(-6px); box-shadow:0 20px 36px rgba(17,22,26,0.08); border-color:var(--green-bright);}
+  .case-card .tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem; text-transform:uppercase;
+    letter-spacing:0.1em; color:var(--green-mid);
+  }
+  .case-card h3{margin-top:14px; font-size:1.3rem; color:var(--ink);}
+  .case-card p{margin-top:10px; color:var(--grey); font-size:0.94rem; line-height:1.6;}
+
+  /* ---------- TRUST ---------- */
+  .trust{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;}
+  @media (max-width:900px){ .trust{grid-template-columns:1fr;} }
+  .trust-list{list-style:none;}
+  .trust-list li{display:flex; gap:16px; padding:20px 0; border-top:1px solid var(--line);}
+  .trust-list li:last-child{border-bottom:1px solid var(--line);}
+  .trust-list .ico{color:var(--green-mid); font-family:'IBM Plex Mono',monospace; font-size:0.9rem; padding-top:2px;}
+  .trust-list h4{color:var(--ink); font-size:1.02rem; margin-bottom:4px;}
+  .trust-list p{color:var(--grey); font-size:0.9rem; line-height:1.5;}
+  .trust-panel{background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:40px;}
+  .trust-panel .big-num{font-family:'IBM Plex Mono',monospace; font-size:2.6rem; color:var(--green);}
+  .trust-panel .big-lbl{color:var(--grey); font-size:0.9rem; margin-top:6px;}
+  .trust-panel hr{border:none; border-top:1px solid var(--line); margin:26px 0;}
+
+  /* ---------- CTA / SIGNUP ---------- */
+  .signup{
+    background:linear-gradient(135deg, var(--green), #0b4429);
+    border-radius:24px; padding:56px; display:flex; justify-content:space-between;
+    align-items:center; gap:40px; flex-wrap:wrap;
+  }
+  .signup h2{font-size:clamp(1.6rem,3vw,2.1rem); color:#fff; max-width:14ch;}
+  .signup p{color:rgba(255,255,255,0.78); margin-top:12px; max-width:40ch;}
+  .signup-form{display:flex; gap:10px; flex-wrap:wrap;}
+  .signup-form input{
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.3); border-radius:100px;
+    padding:14px 20px; color:#fff; font-family:'IBM Plex Sans'; font-size:0.92rem; min-width:240px;
+  }
+  .signup-form input::placeholder{color:rgba(255,255,255,0.6);}
+  .signup-form input:focus{outline:2px solid #fff; outline-offset:2px;}
+  .signup-form .btn-primary{background:#fff; color:var(--green);}
+  .signup-form .btn-primary:hover{background:var(--green-pale);}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line); padding:48px 0 32px; background:var(--paper);}
+  .foot-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:32px;}
+  .foot-tag{color:var(--grey); font-size:0.85rem; max-width:34ch; line-height:1.6;}
+  .foot-links{display:flex; gap:40px; flex-wrap:wrap;}
+  .foot-links h5{font-family:'IBM Plex Mono',monospace; font-size:0.74rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--grey); margin-bottom:14px;}
+  .foot-links a{display:block; font-size:0.88rem; color:var(--ink); opacity:0.82; margin-bottom:10px;}
+  .foot-links a:hover{opacity:1;}
+  .foot-bottom{margin-top:44px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:0.8rem; color:var(--grey);}
+
+  /* ---------- WHATSAPP CHAT BUBBLE ---------- */
+  .wa-fab{
+    position:fixed; right:22px; bottom:22px; z-index:80;
+    display:flex; align-items:center; gap:10px;
+  }
+  .wa-tooltip{
+    background:#fff; color:var(--ink); padding:10px 16px; border-radius:100px;
+    font-size:0.86rem; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,0.14);
+    white-space:nowrap;
+    animation:wa-pop 0.5s ease 1.1s both;
+  }
+  .wa-btn{
+    width:56px; height:56px; border-radius:50%;
+    background:#25D366; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px rgba(37,211,102,0.45);
+    flex-shrink:0;
+    animation:wa-pulse 2.4s ease-in-out infinite;
+    transition:transform 0.25s ease;
+  }
+  .wa-fab:hover .wa-btn{transform:scale(1.08);}
+  .wa-btn svg{width:28px; height:28px;}
+  @keyframes wa-pop{
+    from{opacity:0; transform:translateX(8px);}
+    to{opacity:1; transform:translateX(0);}
+  }
+  @keyframes wa-pulse{
+    0%,100%{box-shadow:0 10px 26px rgba(37,211,102,0.45);}
+    50%{box-shadow:0 10px 26px rgba(37,211,102,0.7), 0 0 0 8px rgba(37,211,102,0.12);}
+  }
+  @media (max-width:560px){
+    .wa-tooltip{display:none;}
+  }
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .flow-dot{animation:none !important;}
+    .wa-btn{animation:none !important;}
+    .wa-tooltip{animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 156 66" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="noteGradNav" x1="0" y1="0" x2="156" y2="66" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#1fae5c"/>
+              <stop offset="1" stop-color="#0b4429"/>
+            </linearGradient>
+          </defs>
+          <rect x="1" y="1" width="154" height="64" rx="6" fill="url(#noteGradNav)" stroke="#0b4429" stroke-width="1.5"/>
+          <rect x="6" y="6" width="144" height="54" rx="3" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="1"/>
+          <text x="12" y="21" fill="#eafbee" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700">100</text>
+          <text x="144" y="53" fill="#eafbee" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" text-anchor="end">100</text>
+          <ellipse cx="78" cy="33" rx="17" ry="20" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+          <path d="M78 21c-5.5 0-9 4.3-9 9.6 0 3.3 1.6 6 3.8 7.7-4.3 2.1-6.8 5.4-6.8 8.7h24c0-3.3-2.5-6.6-6.8-8.7 2.2-1.7 3.8-4.4 3.8-7.7 0-5.3-3.5-9.6-9-9.6Z" fill="rgba(255,255,255,0.55)"/>
+          <text x="78" y="59.5" fill="rgba(255,255,255,0.65)" font-family="IBM Plex Mono, monospace" font-size="4.6" text-anchor="middle" letter-spacing="1.5">ECOMALINK</text>
+          <g transform="translate(15,42)">
+            <path d="M0 2.6a3.4 3.4 0 0 1 4.8-4.8l2.1 2.1a3.4 3.4 0 0 1-4.8 4.8" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M8 -2.6a3.4 3.4 0 0 1-4.8 4.8l-2.1-2.1" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </span>
+      Ecomalink
+    </div>
+    <div class="nav-links nav-mobile-hide">
+      <a href="#how">How it works</a>
+      <a href="#showcase">The app</a>
+      <a href="#corridors">Corridors</a>
+      <a href="#trust">Security</a>
+    </div>
+    <a href="#join" class="nav-cta">Get early access</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Money that moves <em>as fast</em> as your family does.</h1>
+      <p class="lede">Ecomalink is a wallet for sending and receiving money across Southern Africa — Zimbabwe to South Africa, Zambia to Malawi, and back — without a bank queue or a border delay.</p>
+      <div class="hero-cta-row">
+        <a href="#join" class="btn-primary">Join the waitlist</a>
+        <a href="#how" class="btn-secondary">See how it works</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="num">8</div><div class="lbl">SADC corridors at launch</div></div>
+        <div><div class="num">&lt;60s</div><div class="lbl">typical transfer time</div></div>
+        <div><div class="num">24/7</div><div class="lbl">agent &amp; wallet access</div></div>
+      </div>
+    </div>
+
+    <div class="corridor-box">
+      <div class="corridor-glow"></div>
+      <svg viewBox="0 0 420 420">
+        <g stroke="#1c8a52" stroke-width="1.2" opacity="0.45">
+          <line x1="120" y1="330" x2="210" y2="210"/>
+          <line x1="210" y1="210" x2="320" y2="260"/>
+          <line x1="210" y1="210" x2="140" y2="120"/>
+          <line x1="210" y1="210" x2="300" y2="130"/>
+          <line x1="140" y1="120" x2="300" y2="130"/>
+          <line x1="120" y1="330" x2="300" y2="130"/>
+        </g>
+        <circle class="flow-dot" r="3.6">
+          <animateMotion dur="3.4s" repeatCount="indefinite" path="M120,330 L210,210 L320,260"/>
+        </circle>
+        <circle class="flow-dot" r="3.6" opacity="0.7">
+          <animateMotion dur="4.2s" repeatCount="indefinite" path="M140,120 L210,210 L300,130"/>
+        </circle>
+        <g>
+          <circle cx="210" cy="210" r="7" fill="#116339"/>
+          <text x="210" y="196" text-anchor="middle" class="node-label">ZIMBABWE</text>
+
+          <circle cx="120" cy="330" r="5.5" fill="#12161a" opacity="0.75"/>
+          <text x="120" y="350" text-anchor="middle" class="node-label">S. AFRICA</text>
+
+          <circle cx="320" cy="260" r="5.5" fill="#12161a" opacity="0.75"/>
+          <text x="320" y="280" text-anchor="middle" class="node-label">MOZAMBIQUE</text>
+
+          <circle cx="140" cy="120" r="5.5" fill="#12161a" opacity="0.75"/>
+          <text x="140" y="106" text-anchor="middle" class="node-label">ZAMBIA</text>
+
+          <circle cx="300" cy="130" r="5.5" fill="#12161a" opacity="0.75"/>
+          <text x="300" y="116" text-anchor="middle" class="node-label">MALAWI</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="showcase">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">The Ecomalink app</span>
+      <h2>Everything money-related, in one place.</h2>
+      <p>Pay, send, and receive from a single balance — designed to feel as simple on a low-end phone as it does on a flagship.</p>
+    </div>
+    <div class="showcase">
+      <div class="show-card reveal">
+        <img src="https://images.unsplash.com/photo-1563986768817-257bf91c5753?auto=format&fit=crop&w=800&q=80" alt="Person paying and managing bills from a smartphone">
+        <div class="scrim"></div>
+        <div class="caption">
+          <h3>Shop &amp; pay bills</h3>
+          <p>Airtime, electricity, water, DStv — settled in seconds from your balance.</p>
+        </div>
+      </div>
+
+      <div class="show-card phone-card reveal">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-topbar"><span>10:26</span><span>●●● 69%</span></div>
+            <div class="phone-header">
+              <span class="mini-logo"></span>
+              <span>Ecomalink</span>
+            </div>
+            <div class="phone-greet">Hi Thato, welcome back</div>
+            <div class="phone-balances">
+              <div class="row"><span>USD Balance</span><span>••••••</span></div>
+              <div class="row"><span>ZWG Balance</span><span>••••••</span></div>
+              <div class="row"><span>Diaspora Balance</span><span>••••••</span></div>
+            </div>
+            <div class="phone-grid">
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M14 6l6 6-6 6" stroke="#116339" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="lb">Send</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="7" width="16" height="12" rx="2" stroke="#116339" stroke-width="2"/><path d="M4 11h16" stroke="#116339" stroke-width="2"/></svg></div><div class="lb">Cash Out</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3v18M6 3l4 2-4 2" stroke="#116339" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="lb">Pay Bills</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="#116339" stroke-width="2"/><path d="M5 20c1.4-3.6 4-5 7-5s5.6 1.4 7 5" stroke="#116339" stroke-width="2" stroke-linecap="round"/></svg></div><div class="lb">Diaspora</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h14l-1 15-6 2-6-2L5 4Z" stroke="#116339" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="lb">Airtime</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" stroke="#116339" stroke-width="2"/><path d="M3 10h18" stroke="#116339" stroke-width="2"/></svg></div><div class="lb">Cards</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v9l6 3" stroke="#116339" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#116339" stroke-width="2"/></svg></div><div class="lb">History</div></div>
+              <div class="cell"><div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-9.5-9C.7 8 2.6 4 6.5 4 9 4 11 5.6 12 7.3 13 5.6 15 4 17.5 4 21.4 4 23.3 8 21.5 12 19 16.5 12 21 12 21Z" stroke="#116339" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="lb">Request</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="show-card reveal">
+        <img src="https://images.unsplash.com/photo-1633117220131-30b567951115?auto=format&fit=crop&w=800&q=80" alt="Person holding cash after a diaspora remittance cash-out">
+        <div class="scrim"></div>
+        <div class="caption">
+          <h3>Diaspora remittances</h3>
+          <p>Family abroad top up your wallet directly, in hard currency, at a transparent rate.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">How it works</span>
+      <h2>Three steps, one wallet, no branch visit.</h2>
+      <p>Ecomalink runs on your phone. Top up once, then send to any linked wallet, bank account, or cash-out agent in a corridor country.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01 / Fund</div>
+        <h3>Load your wallet</h3>
+        <p>Top up from a bank card, an agent, or a linked mobile money account. Funds are available in your Ecomalink balance immediately.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02 / Send</div>
+        <h3>Pick a recipient</h3>
+        <p>Choose a country, enter a phone number or account, and confirm the amount. Ecomalink shows the exact exchange rate and fee before you send.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03 / Arrive</div>
+        <h3>Money lands fast</h3>
+        <p>Your recipient gets a notification and can cash out at an agent, move it to their bank, or keep it in their own Ecomalink wallet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight" id="corridors">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">Where you can send</span>
+      <h2>Built for the routes families actually use.</h2>
+      <p>We're launching corridor-by-corridor, starting with the routes that move the most money across the region today.</p>
+    </div>
+    <div class="country-belt">
+      <div class="country-chip reveal"><span class="dot"></span>Zimbabwe</div>
+      <div class="country-chip reveal"><span class="dot"></span>South Africa</div>
+      <div class="country-chip reveal"><span class="dot"></span>Zambia</div>
+      <div class="country-chip reveal"><span class="dot"></span>Botswana</div>
+      <div class="country-chip reveal"><span class="dot"></span>Mozambique</div>
+      <div class="country-chip reveal"><span class="dot"></span>Malawi</div>
+      <div class="country-chip reveal"><span class="dot"></span>Namibia</div>
+      <div class="country-chip reveal"><span class="dot"></span>eSwatini</div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="uses">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-eyebrow">What you can do</span>
+      <h2>One wallet, several jobs.</h2>
+    </div>
+    <div class="cases">
+      <div class="case-card reveal">
+        <span class="tag">Family support</span>
+        <h3>Send money home</h3>
+        <p>Support relatives in another SADC country directly from your phone, with the fee shown up front — no surprise deductions on either end.</p>
+      </div>
+      <div class="case-card reveal">
+        <span class="tag">Everyday bills</span>
+        <h3>Pay for things locally</h3>
+        <p>Buy airtime, pay utility bills, and settle merchant payments from your Ecomalink balance, in-country or across a border.</p>
+      </div>
+      <div class="case-card reveal">
+        <span class="tag">Small business</span>
+        <h3>Get paid by regional customers</h3>
+        <p>Traders and cross-border sellers can accept payments from customers in neighbouring countries without opening a foreign bank account.</p>
+      </div>
+      <div class="case-card reveal">
+        <span class="tag">Receiving</span>
+        <h3>Get money from abroad</h3>
+        <p>Anyone sending you money sees your Ecomalink tag or phone number — no need to share full bank details to get paid.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight" id="trust">
+  <div class="wrap trust">
+    <div>
+      <div class="sec-eyebrow" style="margin-bottom:14px;">Security &amp; compliance</div>
+      <h2 style="font-size:clamp(1.7rem,3vw,2.2rem); color:var(--ink); line-height:1.2; margin-bottom:26px;">Built to the standard money movement needs.</h2>
+      <ul class="trust-list">
+        <li>
+          <div class="ico">01</div>
+          <div>
+            <h4>Regulated wallet infrastructure</h4>
+            <p>Ecomalink operates through licensed payment and money-transmission partners in every corridor it serves.</p>
+          </div>
+        </li>
+        <li>
+          <div class="ico">02</div>
+          <div>
+            <h4>Verified identity, every time</h4>
+            <p>Accounts are opened with KYC checks in line with each country's financial regulator, keeping the network safe for everyone on it.</p>
+          </div>
+        </li>
+        <li>
+          <div class="ico">03</div>
+          <div>
+            <h4>Encrypted, monitored transfers</h4>
+            <p>Every transaction is encrypted in transit and screened for fraud before funds are released to the recipient.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="trust-panel reveal">
+      <div class="big-num">PIN + OTP</div>
+      <div class="big-lbl">two-step confirmation on every send</div>
+      <hr>
+      <div class="big-num">24/7</div>
+      <div class="big-lbl">transaction monitoring across all corridors</div>
+      <hr>
+      <div class="big-num">In-app</div>
+      <div class="big-lbl">dispute and support resolution, no call centre queue</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="join">
+  <div class="wrap">
+    <div class="signup">
+      <div>
+        <h2>Be first onto the network.</h2>
+        <p>Leave your details and we'll tell you the moment Ecomalink opens in your corridor.</p>
+      </div>
+      <form class="signup-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='You\'re on the list';">
+        <input type="text" placeholder="Full name" required>
+        <input type="tel" placeholder="Phone number" required>
+        <button type="submit" class="btn-primary" style="border:none; cursor:pointer;">Notify me</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:14px;">
+          <span class="logo-mark">
+            <svg viewBox="0 0 156 66" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="noteGradFoot" x1="0" y1="0" x2="156" y2="66" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#1fae5c"/>
+                  <stop offset="1" stop-color="#0b4429"/>
+                </linearGradient>
+              </defs>
+              <rect x="1" y="1" width="154" height="64" rx="6" fill="url(#noteGradFoot)" stroke="#0b4429" stroke-width="1.5"/>
+              <rect x="6" y="6" width="144" height="54" rx="3" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="1"/>
+              <text x="12" y="21" fill="#eafbee" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700">100</text>
+              <text x="144" y="53" fill="#eafbee" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" text-anchor="end">100</text>
+              <ellipse cx="78" cy="33" rx="17" ry="20" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+              <path d="M78 21c-5.5 0-9 4.3-9 9.6 0 3.3 1.6 6 3.8 7.7-4.3 2.1-6.8 5.4-6.8 8.7h24c0-3.3-2.5-6.6-6.8-8.7 2.2-1.7 3.8-4.4 3.8-7.7 0-5.3-3.5-9.6-9-9.6Z" fill="rgba(255,255,255,0.55)"/>
+              <text x="78" y="59.5" fill="rgba(255,255,255,0.65)" font-family="IBM Plex Mono, monospace" font-size="4.6" text-anchor="middle" letter-spacing="1.5">ECOMALINK</text>
+              <g transform="translate(15,42)">
+                <path d="M0 2.6a3.4 3.4 0 0 1 4.8-4.8l2.1 2.1a3.4 3.4 0 0 1-4.8 4.8" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <path d="M8 -2.6a3.4 3.4 0 0 1-4.8 4.8l-2.1-2.1" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </span>
+          Ecomalink
+        </div>
+        <p class="foot-tag">A cross-border wallet for Southern Africa. Send, receive, and pay across the SADC region from one app.</p>
+      </div>
+      <div class="foot-links">
+        <div>
+          <h5>Product</h5>
+          <a href="#how">How it works</a>
+          <a href="#corridors">Corridors</a>
+          <a href="#uses">Use cases</a>
+        </div>
+        <div>
+          <h5>Company</h5>
+          <a href="#trust">Security</a>
+          <a href="#join">Early access</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Ecomalink. All rights reserved.</span>
+      <span>Concept &amp; design draft — not a licensed money transmitter yet.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-fab" href="https://wa.me/263782107813" target="_blank" rel="noopener" aria-label="Chat with Thato on WhatsApp">
+  <span class="wa-tooltip">Say Hi to Thato</span>
+  <span class="wa-btn">
+    <svg viewBox="0 0 32 32" fill="none">
+      <path d="M16 3C9.4 3 4 8.4 4 15c0 2.2.6 4.3 1.7 6.1L4 29l8.1-1.6c1.8.9 3.8 1.4 5.9 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3Z" fill="#fff"/>
+      <path d="M16 4.6c-5.7 0-10.4 4.6-10.4 10.4 0 2 .6 3.9 1.6 5.5l.3.4-1 3.7 3.8-1 .4.2c1.5.9 3.3 1.4 5.2 1.4 5.7 0 10.4-4.6 10.4-10.4S21.7 4.6 16 4.6Z" fill="#25D366"/>
+      <path d="M12.2 9.8c-.3-.6-.5-.6-.8-.6h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.2 1.4 3.4c.2.2 2.3 3.7 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.9-2.1Z" fill="#fff"/>
+    </svg>
+  </span>
+</a>
+
+<script>
+  var reveals = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    reveals.forEach(function(el, i){ el.style.transitionDelay = (i % 4) * 70 + 'ms'; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in-view'); });
+  }
+</script>
+</body>
+</html>
